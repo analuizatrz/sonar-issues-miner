@@ -39,6 +39,14 @@
 			<version>2.9.0</version>
 		</dependency>
 
+<!-- https://mvnrepository.com/artifact/org.sonarsource.api.plugin/sonar-plugin-api -->
+<dependency>
+    <groupId>org.sonarsource.api.plugin</groupId>
+    <artifactId>sonar-plugin-api</artifactId>
+    <version>10.14.0.2599</version>
+    <scope>provided</scope>
+</dependency>
+
 	</dependencies>
 
 	<properties>

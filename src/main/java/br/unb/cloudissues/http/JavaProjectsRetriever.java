@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 
 import com.google.gson.internal.LinkedTreeMap;
 
+
+import br.unb.cloudissues.model.http.AuthorizedRequestBuilder;
 import br.unb.cloudissues.model.Project;
 import br.unb.cloudissues.model.SonarProjectComponent;
 import br.unb.cloudissues.util.Utils;
@@ -40,6 +42,8 @@ public class JavaProjectsRetriever {
 	private final int maxRequestsToWait;
 
 	private final OkHttpClient httpClient = new OkHttpClient();
+
+	AuthorizedRequestBuilder authorizedRequestBuilder;
 
 	private JavaProjectsRetriever(Builder builder) {
 		baseUrl = builder.baseUrl;
@@ -90,13 +94,19 @@ public class JavaProjectsRetriever {
 
 		count = 1;
 
-		System.out.println("\nretrieving Java projects in " + baseUrl + PROJECTS_SEARCH_URL);
 		return httpRequestJavaProjects();
 
 	}
 
 	private List<Project> httpRequestJavaProjects() throws IOException, InterruptedException {
-		String responseBody = retrieveResponseBodyForURL(buildURL());
+		String url = buildURL();
+		String responseBody = retrieveResponseBodyForURL(url);
+		System.out.println("\nRetrieving C# projects in " + url);
+
+		if (responseBody.length() == 0) {
+			return new ArrayList<>();
+		}
+
 		Map<String, Object> responseMap = Utils.responseToMap(responseBody);
 		@SuppressWarnings("unchecked")
 		Long total = ((Map<String, Double>) responseMap.get("paging")).get("total").longValue();
@@ -123,7 +133,7 @@ public class JavaProjectsRetriever {
 
 	private HttpUrl.Builder minimumUrlBuilder() {
 		HttpUrl.Builder urlBuilder = HttpUrl.parse(baseUrl + PROJECTS_SEARCH_URL).newBuilder();
-		urlBuilder.addQueryParameter("filter", "languages=java");
+		urlBuilder.addQueryParameter("filter", "languages=cs");
 		urlBuilder.addQueryParameter("ps", DEFAULT_PAGE_SIZE.toString());
 		urlBuilder.addQueryParameter("format", "json");
 		return urlBuilder;
@@ -145,7 +155,7 @@ public class JavaProjectsRetriever {
 	}
 
 	private String doRetrieveResponseBodyForURL(String url) throws IOException {
-		Request request = new Request.Builder().url(url).build();
+		Request request = AuthorizedRequestBuilder.Builder().url(url).build();
 		Response response = httpClient.newCall(request).execute();
 		return response.body().string();
 	}

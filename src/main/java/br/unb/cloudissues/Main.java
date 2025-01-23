@@ -23,7 +23,7 @@ public class Main {
 	// example: "https://sonar.eclipse.org/api/"
 	// example: "https://builds.apache.org/analysis/api"
 	// example: "https://sonarcloud.io/api"
-	private static final String SONAR_API_URL = "";
+	private static final String SONAR_API_URL = "http://localhost:9000/api";
 
 	private static final String ISSUES_SEARCH_URL = SONAR_API_URL + "/issues/search";
 
@@ -45,6 +45,8 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws IOException, InterruptedException {
+
+		
 		retrieveAndWriteRules();
 
 		retrieveAndWriteProjects();
@@ -63,14 +65,18 @@ public class Main {
 	private static void retrieveAndWriteRules() throws IOException, InterruptedException {
 		JavaRulesRetriever jrr = new JavaRulesRetriever(SONAR_API_URL);
 		List<Rule> rules = jrr.retrieve();
-		Utils.writeObjToFileAsJSON(rules, RULES_LIST);
+		if (rules.size() > 0) {
+			Utils.writeObjToFileAsJSON(rules, RULES_LIST);
+		}
 	}
 
 	private static void retrieveAndWriteProjects() throws IOException, InterruptedException {
 		JavaProjectsRetriever jpr = new JavaProjectsRetriever.Builder(SONAR_API_URL)
 				.isSonarCloud(false).build();
 		List<Project> sonarJavaProjects = jpr.retrieve();
-		Utils.writeObjToFileAsJSON(sonarJavaProjects, PROJECTS_LIST);
+		if (sonarJavaProjects.size() > 0) {
+			Utils.writeObjToFileAsJSON(sonarJavaProjects, PROJECTS_LIST);
+		}
 	}
 
 	static void retrieveAndWriteProjectsIfApache() throws IOException {

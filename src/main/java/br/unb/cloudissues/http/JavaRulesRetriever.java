@@ -34,13 +34,18 @@ public class JavaRulesRetriever {
 
 	public List<Rule> retrieve() throws IOException, InterruptedException {
 		count = 1;
-		System.out.println("\nRetrieving Java rules in " + baseUrl + RULES_SEARCH_URL);
 		return httpRequestJavaRules();
 	}
 
 	@SuppressWarnings("unchecked")
 	private List<Rule> httpRequestJavaRules() throws IOException, InterruptedException {
-		String rulesResponse = requestRulesResponseAsString(buildURLForJavaRules());
+		String url = buildURLForJavaRules();
+		System.out.println("\nRetrieving Java rules in " + url);
+		
+		String rulesResponse = requestRulesResponseAsString(url);
+		if (rulesResponse.length() == 0) {
+			return new ArrayList<>();
+		}
 
 		Map<String, Object> responseMap = Utils.responseToMap(rulesResponse);
 
@@ -75,14 +80,14 @@ public class JavaRulesRetriever {
 	}
 
 	private String doRequestRulesResponseAsString(String url) throws IOException {
-		Request request = new Request.Builder().url(url).build();
+		Request request = AuthorizedRequestBuilder.Builder().url(url).build();
 		Response response = httpClient.newCall(request).execute();
 		return response.body().string();
 	}
 
 	private String buildURLForJavaRules() {
 		HttpUrl.Builder urlBuilder = HttpUrl.parse(baseUrl + RULES_SEARCH_URL).newBuilder();
-		urlBuilder.addQueryParameter("languages", "java");
+		urlBuilder.addQueryParameter("languages", "cs");
 		urlBuilder.addQueryParameter("ps", "500");
 		return urlBuilder.build().toString();
 	}
@@ -110,7 +115,7 @@ public class JavaRulesRetriever {
 
 	private String buildUrlForPage(Integer page) {
 		HttpUrl.Builder urlBuilder = HttpUrl.parse(baseUrl + RULES_SEARCH_URL).newBuilder();
-		urlBuilder.addQueryParameter("languages", "java");
+		urlBuilder.addQueryParameter("languages", "cs");
 		urlBuilder.addQueryParameter("ps", "500");
 		urlBuilder.addQueryParameter("p", page.toString());
 		return urlBuilder.build().toString();

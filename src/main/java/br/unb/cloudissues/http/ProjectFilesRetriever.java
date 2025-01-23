@@ -183,7 +183,7 @@ public class ProjectFilesRetriever {
 		urlBuilder.addQueryParameter(componentQueryParamKey(), projectKey);
 		urlBuilder.addQueryParameter("qualifiers", "TRK");
 		urlBuilder.addQueryParameter("metricKeys",
-				"complexity_in_classes,last_commit_date,ncloc,sqale_rating,overall_coverage,"
+				"complexity_in_classes,last_commit_date,ncloc,sqale_rating,"
 						+ "alert_status,reliability_rating,security_rating,classes");
 		return urlBuilder.build().toString();
 	}
@@ -194,7 +194,8 @@ public class ProjectFilesRetriever {
 	}
 
 	private String doRetrieveResponseBodyForUrl(String url) throws IOException {
-		Request request = new Request.Builder().url(url).build();
+		System.out.println("Retrieving Files and Metrics"+ url);
+		Request request = AuthorizedRequestBuilder.Builder().url(url).build();
 		Response response = httpClient.newCall(request).execute();
 		return response.body().string();
 	}
@@ -266,7 +267,7 @@ public class ProjectFilesRetriever {
 	}
 
 	private String metricsKeysQueryParamValue() {
-		String metricsCommonForNewerAndApache = "ncloc,overall_coverage,coverage,lines,complexity";
+		String metricsCommonForNewerAndApache = "ncloc,coverage,lines,complexity";
 		if (isApache) {
 			return metricsCommonForNewerAndApache;
 		}

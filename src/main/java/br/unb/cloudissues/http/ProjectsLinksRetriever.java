@@ -138,7 +138,7 @@ public class ProjectsLinksRetriever {
 	}
 
 	private String doRetrieveResponseBodyForURL(String url) throws IOException {
-		Request request = new Request.Builder().url(url).build();
+		Request request = AuthorizedRequestBuilder.Builder().url(url).build();
 		Response response = httpClient.newCall(request).execute();
 		return response.body().string();
 	}
